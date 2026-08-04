@@ -553,7 +553,7 @@ select,input[type=number]{
     </div>
     <div class="panel">
       <h3 style="display:flex;justify-content:space-between;align-items:center;">🦷 DH別サマリー（現担当患者数・中断率）<button id="exportDHBtn" style="border:2px solid var(--base);background:#fff;border-radius:12px;padding:6px 12px;font-size:11.5px;font-weight:700;color:var(--accent);cursor:pointer;">📥 Excel(CSV)出力</button></h3>
-      <div class="mock-note" style="margin-bottom:8px;">💡「現担当患者数」は、患者の主担当DHのみを集計した人数です（1患者は1名のDHにのみ帰属。重複なし）。「中断率」もこの人数を分母にしています。</div>
+      <div class="mock-note" style="margin-bottom:8px;">💡「現担当患者数」は、患者の主担当DHのみを集計した人数です（1患者は1名のDHにのみ帰属。重複なし）。対象は、表示期間（2026年1月以降）に1回以上来院がある患者に限定しています。「中断率」もこの人数を分母にしています。</div>
       <div class="mock-note" style="margin-bottom:8px;">📌 主担当DHの決め方：その患者のメンテ系来院（SPT・定期検診等）のうち、最も回数の多いDHとしています（同数の場合は直近の来院を優先）。メンテ系来院が1回もない患者は、最終来院時のDHを使います。</div>
       <div class="mock-note" style="margin-bottom:14px;">⚠️ DHの中断は「③移行中断」「④メンテ中断」（＝メンテ・SPTサイクルからの離脱）のみをカウントしています。「①初診のみ中断」「②治療中断」は現担当患者数には含まれますが、DHの中断としてはカウントしません（DHが主に担当するのはメンテ系患者のため）。Dr別管理は逆に①②のみをカウントしており、定義が異なります。両ページの数値を単純比較しないようご注意ください。</div>
       <table>
@@ -939,7 +939,7 @@ select,input[type=number]{
         <thead><tr><th>指標</th><th>算出方法</th></tr></thead>
         <tbody>
           <tr><td>月別担当件数</td><td>その月の来院履歴で、そのDH（またはDr）が「主担当」として登録されているユニーク患者数</td></tr>
-          <tr><td>現担当患者数（DH）</td><td>患者のメンテ系来院（SPT・定期検診等）のうち最も回数の多いDHを主担当とし、1患者につき1名としてカウント（同数の場合は直近の来院を優先。メンテ系来院が無い患者は最終来院時のDHを使用）</td></tr>
+          <tr><td>現担当患者数（DH）</td><td>患者のメンテ系来院（SPT・定期検診等）のうち最も回数の多いDHを主担当とし、1患者につき1名としてカウント（同数の場合は直近の来院を優先。メンテ系来院が無い患者は最終来院時のDHを使用）。対象は表示期間（2026年1月以降）に1回以上来院がある患者のみ</td></tr>
           <tr><td>現担当患者数（Dr）</td><td>患者の「最終来院時点」の主担当Drを対象に、1患者につき1名としてカウント（重複なし）</td></tr>
           <tr><td>中断数・中断率</td><td>現担当患者数を分母に、現時点で未来予約がない患者のうち特定の中断種別のみを分子とする。DH別管理：③移行中断・④メンテ中断のみをカウント（①②は含めない）。Dr別管理：①初診のみ中断・②治療中断のみをカウント（③④は含めない）</td></tr>
           <tr><td>Dr別・DH別 詳細分析（患者属性.csvが必要）</td><td>患者数・次回予約率・平均来院回数・年代構成・よく行う最終診療メニューTOP3を、それぞれの担当者（最終担当ベース）ごとに集計</td></tr>
