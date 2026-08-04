@@ -318,7 +318,7 @@ select,input[type=number]{
 
     <div class="panel">
       <h3>📈 月別中断率推移</h3>
-      <div class="mock-note" style="margin-bottom:10px;">📌 このグラフは表示期間（2026年1月〜7月）のみです。中断患者リスト自体は2025年7月〜2026年7月の全期間から判定しています。</div>
+      <div class="mock-note" style="margin-bottom:10px;">📌 このグラフ・中断患者リストとも、最終来院月が表示期間（2026年1月以降）に入っている患者のみが対象です。DH別管理・Dr別管理などの「月別」系ページと対象期間を揃えています。中断カテゴリの判定自体（初診のみ中断か等）は全期間データを踏まえて行っています。</div>
       <div class="legend-row">
         <span><span class="sw blue"></span>来院患者数</span>
         <span><span class="sw red"></span>中断率(%)</span>
@@ -436,11 +436,15 @@ select,input[type=number]{
     </div>
     <div class="panel">
       <h3 style="display:flex;justify-content:space-between;align-items:center;">🧩 新患来院マトリクス<button id="exportMatrixBtn" style="border:2px solid var(--base);background:#fff;border-radius:12px;padding:6px 12px;font-size:11.5px;font-weight:700;color:var(--accent);cursor:pointer;">📥 Excel(CSV)出力</button></h3>
-      <div style="font-size:11px;color:var(--muted);margin-bottom:12px;">新＝新患として来院した月　／　○＝その月に来院あり　／　×＝来院なし　／　−＝新患になる前の期間</div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:12px;">新＝新患として来院した月　／　○＝その月に来院あり　／　×＝来院なし　／　−＝新患になる前の期間　／　未来予約＝★の月に予約あり（複数月ある場合は★9月/★10月のように列挙）</div>
       <div class="filters">
         <div class="fg">
           <label>初診月</label>
           <select id="fMatrixMonth"><option value="all">全て</option></select>
+        </div>
+        <div class="fg">
+          <label>担当DH</label>
+          <select id="fMatrixDh"><option value="all">全て</option></select>
         </div>
         <div class="fg">
           <label>状態</label>
@@ -482,7 +486,7 @@ select,input[type=number]{
     <div class="cards" id="sptCards"></div>
     <div class="panel">
       <h3>📈 月別 SPT中断率の推移</h3>
-      <div class="mock-note" style="margin-bottom:10px;">📌 「そのSPT患者の最終来院月」ごとに、現時点で中断しているかどうかを集計したものです。直近の月ほど、まだ次の来院タイミングが来ていないだけの患者が多く含まれるため、中断率が低く出やすい傾向があります（月別中断率推移と同じ考え方です）。</div>
+      <div class="mock-note" style="margin-bottom:10px;">📌 「その月にSPT来院があった患者全員」（最終来院月に限らず、その後も通院を続けている患者も含む）を対象に、現時点で中断しているかどうかを集計したものです。ただし直近1〜2ヶ月は、まだ次の来院タイミングが来ていないだけの患者が多く含まれるため、中断率が実態より低く出やすい点にはご注意ください。</div>
       <div class="mock-note" id="sptTrendRangeNote" style="margin-bottom:10px;">—</div>
       <svg class="trend-chart" id="sptTrendChart" viewBox="0 0 760 240" style="width:100%;height:240px;display:block;"></svg>
     </div>
@@ -551,7 +555,7 @@ select,input[type=number]{
       <h3 style="display:flex;justify-content:space-between;align-items:center;">🦷 DH別サマリー（現担当患者数・中断率）<button id="exportDHBtn" style="border:2px solid var(--base);background:#fff;border-radius:12px;padding:6px 12px;font-size:11.5px;font-weight:700;color:var(--accent);cursor:pointer;">📥 Excel(CSV)出力</button></h3>
       <div class="mock-note" style="margin-bottom:8px;">💡「現担当患者数」は、患者の主担当DHのみを集計した人数です（1患者は1名のDHにのみ帰属。重複なし）。「中断率」もこの人数を分母にしています。</div>
       <div class="mock-note" style="margin-bottom:8px;">📌 主担当DHの決め方：その患者のメンテ系来院（SPT・定期検診等）のうち、最も回数の多いDHとしています（同数の場合は直近の来院を優先）。メンテ系来院が1回もない患者は、最終来院時のDHを使います。</div>
-      <div class="mock-note" style="margin-bottom:14px;">⚠️ このページの中断率は、Dr別管理ページの中断率と定義が異なります。DH別管理では③移行中断・④メンテ中断も中断として数えますが、Dr別管理では数えません（詳しくはDr別管理ページの注記をご覧ください）。両ページの数値を単純比較しないようご注意ください。</div>
+      <div class="mock-note" style="margin-bottom:14px;">⚠️ DHの中断は「③移行中断」「④メンテ中断」（＝メンテ・SPTサイクルからの離脱）のみをカウントしています。「①初診のみ中断」「②治療中断」は現担当患者数には含まれますが、DHの中断としてはカウントしません（DHが主に担当するのはメンテ系患者のため）。Dr別管理は逆に①②のみをカウントしており、定義が異なります。両ページの数値を単純比較しないようご注意ください。</div>
       <table>
         <thead id="dhTableHead"></thead>
         <tbody id="dhTable"></tbody>
@@ -919,9 +923,9 @@ select,input[type=number]{
       <table>
         <thead><tr><th>指標</th><th>算出方法</th></tr></thead>
         <tbody>
-          <tr><td>SPT管理患者数</td><td>最終来院メニューに「SPT」の文字列を含む患者数</td></tr>
+          <tr><td>SPT管理患者数</td><td>最終来院メニューに「SPT」の文字列を含み、かつ最終来院月が表示期間（2026年1月以降）に入っている患者数</td></tr>
           <tr><td>次回予約ステータス</td><td>未来予約なし→「中断」／未来予約のメニューがメンテ系キーワードを含む→「継続」／それ以外の処置内容→「治療予約」</td></tr>
-          <tr><td>SPT管理率</td><td>SPT管理患者数 ÷ 全期間の来院患者数（4,461名）</td></tr>
+          <tr><td>SPT管理率</td><td>SPT管理患者数 ÷ 表示期間（2026年1月以降）に最終来院がある患者数</td></tr>
           <tr><td>DH別内訳の担当DH判定</td><td>その患者のメンテ系来院（SPT・定期検診・SRP等）のうち最も回数の多いDHを担当患者としてカウント（同数の場合は直近の来院を優先）。メンテ系来院が1回も無い患者は、最終来院時のDHにフォールバック。最終的にDHが「未指定」の患者は、DH別内訳から除外。この判定方法はDH別管理ページの「現担当患者数」と共通</td></tr>
         </tbody>
       </table>
@@ -937,7 +941,7 @@ select,input[type=number]{
           <tr><td>月別担当件数</td><td>その月の来院履歴で、そのDH（またはDr）が「主担当」として登録されているユニーク患者数</td></tr>
           <tr><td>現担当患者数（DH）</td><td>患者のメンテ系来院（SPT・定期検診等）のうち最も回数の多いDHを主担当とし、1患者につき1名としてカウント（同数の場合は直近の来院を優先。メンテ系来院が無い患者は最終来院時のDHを使用）</td></tr>
           <tr><td>現担当患者数（Dr）</td><td>患者の「最終来院時点」の主担当Drを対象に、1患者につき1名としてカウント（重複なし）</td></tr>
-          <tr><td>中断数・中断率</td><td>現担当患者数を分母に、現時点で未来予約がない患者の数・割合を計算（Dr別管理は、治療完了しメンテへ引き渡し済みの患者(③移行中断・④メンテ中断)を除いて計算）</td></tr>
+          <tr><td>中断数・中断率</td><td>現担当患者数を分母に、現時点で未来予約がない患者のうち特定の中断種別のみを分子とする。DH別管理：③移行中断・④メンテ中断のみをカウント（①②は含めない）。Dr別管理：①初診のみ中断・②治療中断のみをカウント（③④は含めない）</td></tr>
           <tr><td>Dr別・DH別 詳細分析（患者属性.csvが必要）</td><td>患者数・次回予約率・平均来院回数・年代構成・よく行う最終診療メニューTOP3を、それぞれの担当者（最終担当ベース）ごとに集計</td></tr>
         </tbody>
       </table>
@@ -2071,6 +2075,11 @@ let matrixPage = 0;
 const fMatrixMonth = document.getElementById("fMatrixMonth");
 MATRIX.months.forEach(m=>{ const o=document.createElement("option"); o.value=m; o.textContent=m.slice(5)+"月"; fMatrixMonth.appendChild(o); });
 const fMatrixStatus = document.getElementById("fMatrixStatus");
+const fMatrixDh = document.getElementById("fMatrixDh");
+if (fMatrixDh) {
+  const dhNames = Array.from(new Set(MATRIX.patients.map(p=>p.dh))).filter(n=>n && n!=="未指定" && n!=="未定").sort();
+  dhNames.forEach(n=>{ const o=document.createElement("option"); o.value=n; o.textContent=n; fMatrixDh.appendChild(o); });
+}
 
 const statusBadge = s => {
   if(s==="継続") return `<span class="badge cat-mainte">継続</span>`;
@@ -2079,9 +2088,10 @@ const statusBadge = s => {
 };
 
 function getMatrixFiltered(){
-  const mV = fMatrixMonth.value, sV = fMatrixStatus.value;
+  const mV = fMatrixMonth.value, sV = fMatrixStatus.value, dV = fMatrixDh ? fMatrixDh.value : "all";
   return MATRIX.patients.filter(p=>{
     if(mV!=="all" && p.shoshinMonth!==mV) return false;
+    if(dV!=="all" && p.dh!==dV) return false;
     if(sV!=="all" && p.status!==sV) return false;
     return true;
   });
@@ -2109,7 +2119,7 @@ function renderMatrix(){
       <td>${p.shoshinMonth.slice(5)}月</td>
       <td>${p.dh}</td>
       ${p.cells.map(iconStyle).join("")}
-      <td>${p.hasFuture ? "○" : "—"}</td>
+      <td>${(p.future && p.future.length) ? "★"+p.future.join("/") : "—"}</td>
       <td>${p.visitCount}</td>
       <td>${statusBadge(p.status)}</td>
     </tr>
@@ -2120,7 +2130,7 @@ function renderMatrix(){
   document.getElementById("matrixPrevPage").disabled = matrixPage<=0;
   document.getElementById("matrixNextPage").disabled = matrixPage>=totalPages-1;
 }
-[fMatrixMonth, fMatrixStatus].forEach(el=>el.addEventListener("change", ()=>{ matrixPage=0; renderMatrix(); }));
+[fMatrixMonth, fMatrixStatus, fMatrixDh].filter(Boolean).forEach(el=>el.addEventListener("change", ()=>{ matrixPage=0; renderMatrix(); }));
 document.getElementById("matrixPrevPage").addEventListener("click", ()=>{ if(matrixPage>0){matrixPage--; renderMatrix();} });
 document.getElementById("matrixNextPage").addEventListener("click", ()=>{ matrixPage++; renderMatrix(); });
 renderMatrix();
@@ -2510,10 +2520,10 @@ renderContinuity();
   const dataRangeLabel = fmtRange_(DATA_RANGE);
   const displayRangeLabel = fmtRange_(DISPLAY_RANGE);
   // 「現在の状況」系(全期間ベース)
-  const fullRangeIds = ["dropoutPeriodBadge", "sptPeriodBadge"];
+  const fullRangeIds = ["sptPeriodBadge"];
   fullRangeIds.forEach(id => { const el = document.getElementById(id); if (el) el.textContent = dataRangeLabel; });
   // 「月別推移」系(ローリング表示期間ベース)
-  const displayRangeIds = ["newpatientPeriodBadge", "dhPeriodBadge", "drPeriodBadge", "categoryPeriodBadge", "unitPeriodBadge"];
+  const displayRangeIds = ["dropoutPeriodBadge", "newpatientPeriodBadge", "dhPeriodBadge", "drPeriodBadge", "categoryPeriodBadge", "unitPeriodBadge"];
   displayRangeIds.forEach(id => { const el = document.getElementById(id); if (el) el.textContent = displayRangeLabel; });
   // 月次概要(最新月のみ)
   const overviewEl = document.getElementById("overviewPeriodBadge");
