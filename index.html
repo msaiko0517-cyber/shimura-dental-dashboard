@@ -587,7 +587,7 @@ select,input[type=number]{
       <h3 style="display:flex;justify-content:space-between;align-items:center;">🩺 Dr別サマリー（2026年1月以降の新患ベース）<button id="exportDRBtn" style="border:2px solid var(--base);background:#fff;border-radius:12px;padding:6px 12px;font-size:11.5px;font-weight:700;color:var(--accent);cursor:pointer;">📥 Excel(CSV)出力</button></h3>
       <div class="mock-note" style="margin-bottom:8px;">💡 このページは、表示期間（通常2026年1月以降・直近12ヶ月）に新患として来院した患者だけを対象に集計しています。以前担当していた既存患者や、担当替えの影響は含まれません。「現担当患者数」＝そのDrが最終来院時点で主担当となっている新患の人数です（1患者は1名のDrにのみ帰属）。</div>
       <div class="mock-note" style="margin-bottom:8px;">🔄 中断率は、治療完了後にメンテへ引き渡し済みの患者（③移行中断・④メンテ中断）を除いて計算しています（Drにとって治療完了は成功のため）。</div>
-      <div class="mock-note" style="margin-bottom:14px;">📈 「〇月時点の継続率」は、その月までに新患として来院した人数（累計）のうち、現時点（本日）で次回予約が入っている人数・割合を表示しています。1月の新患が2月・3月…と月を追ってどれだけ継続来院できているかを確認できます。</div>
+      <div class="mock-note" style="margin-bottom:14px;">📈 「〇月時点の継続率」は、その月末時点で実際にその患者を診ていたDrごとに、その時点までの新患累計人数のうち現時点（本日）で次回予約が入っている人数・割合を表示しています。担当替えがあった場合、切り替わった月以降は新しい担当Drの実績として算入され、それ以前の月には遡って算入されません（重複カウントもありません）。右側の「現担当患者数・中断率」は今この瞬間の最終担当Drを基準にしているため、月別列の8月時点の分母とは一致しない場合があります。</div>
       <table>
         <thead id="drTableHead"></thead>
         <tbody id="drTable"></tbody>
