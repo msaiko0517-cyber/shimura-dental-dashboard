@@ -319,7 +319,7 @@ select,input[type=number]{
 
     <div class="panel">
       <h3>📈 月別中断率推移</h3>
-      <div class="mock-note" style="margin-bottom:10px;">📌 このグラフ・中断患者リストとも、最終来院月が表示期間（2026年1月以降）に入っている患者のみが対象です。DH別管理・Dr別管理などの「月別」系ページと対象期間を揃えています。中断カテゴリの判定自体（初診のみ中断か等）は全期間データを踏まえて行っています。</div>
+      <div class="mock-note" style="margin-bottom:10px;">📌 対象は最終来院月が2026年1月以降の患者です。詳しい算出方法は「データ定義・算出根拠」ページをご覧ください。</div>
       <div class="legend-row">
         <span><span class="sw blue"></span>来院患者数</span>
         <span><span class="sw red"></span>中断率(%)</span>
@@ -421,8 +421,7 @@ select,input[type=number]{
       </div>
       <div class="period-badge" id="newpatientPeriodBadge">—</div>
     </div>
-    <div class="mock-note">💡 新患の判定は、CSVの「初診日」列を使っています（無い患者のみ、診療メニューに「初診」を含むかで代用。「再初診」は新患に含めません）。表示は2026年1月以降の新患のみですが、判定自体は2025年7月〜2026年7月の全期間データを踏まえて行っています。</div>
-    <div class="mock-note" style="margin-top:8px;">💡 このページは「新患として来院した患者」だけに絞った継続率です。既存患者も含めた全体の中断状況は「中断分析」ページをご覧ください。</div>
+    <div class="mock-note">💡 新患は「初診日」が2026年1月以降の患者です（初診日が無い場合は診療メニューの「初診」で代用）。新患だけに絞った継続率で、既存患者も含めた全体は「中断分析」ページをご覧ください。</div>
     <div class="cards" id="newpatientCards"></div>
     <div class="panel">
       <h3>📈 月別新患数・継続率</h3>
@@ -481,13 +480,11 @@ select,input[type=number]{
       </div>
       <div class="period-badge" id="sptPeriodBadge">—</div>
     </div>
-    <div class="mock-note">💡 対象は「SPT」「定期検診」のみです（SRP・クリーニング・フッ素等は含みません）。</div>
-    <div class="mock-note" style="margin-top:8px;">📊 DH別管理ページの「中断率」は全患者が対象ですが、こちらはSPT・定期検診の患者だけに絞った継続率です。担当DHごとの全体の傾向はDH別管理ページをご覧ください。</div>
-    <div class="mock-note" style="margin-top:8px;">📌 担当DHの決め方：その患者のメンテ系来院（SPT・定期検診・SRP等）のうち、最も回数の多いDHを担当患者としてカウントします（同数の場合は直近の来院を優先）。メンテ系来院が1回もない患者は、最終来院時のDHを使います。DHが未登録の患者は集計から除外しています。この判定方法はDH別管理ページと共通です。</div>
+    <div class="mock-note">💡 対象は「SPT」「定期検診」のみです（SRP等は含みません）。担当DHは、その患者のメンテ系来院で最も回数が多いDHとして判定しています。</div>
     <div class="cards" id="sptCards"></div>
     <div class="panel">
       <h3>📈 月別 SPT定着率の推移（累計コホート）</h3>
-      <div class="mock-note" style="margin-bottom:10px;">📌 1月にSPT/定期検診を始めた患者、1〜2月の累計、1〜3月の累計…というように、月を追うごとに対象人数が積み上がっていく形で集計しています。1回でもSPTに入った患者が、その後も継続してメンテに通えているかを追跡できます。</div>
+      <div class="mock-note" style="margin-bottom:10px;">📌 1月にSPTを始めた患者、1〜2月の累計…というように月を追って対象人数が積み上がっていく集計です。各月末から90日経過後の実績で継続・治療予約・中断を判定するため、直近の月は「判定中」と表示されます。</div>
       <div class="mock-note" id="sptTrendCohortNote" style="margin-bottom:10px;">—</div>
       <div class="mock-note" id="sptTrendRangeNote" style="margin-bottom:10px;">—</div>
       <svg class="trend-chart" id="sptTrendChart" viewBox="0 0 760 240" style="width:100%;height:240px;display:block;"></svg>
@@ -555,10 +552,8 @@ select,input[type=number]{
     </div>
     <div class="panel">
       <h3 style="display:flex;justify-content:space-between;align-items:center;">🦷 DH別サマリー（現担当患者数・中断率）<button id="exportDHBtn" style="border:2px solid var(--base);background:#fff;border-radius:12px;padding:6px 12px;font-size:11.5px;font-weight:700;color:var(--accent);cursor:pointer;">📥 Excel(CSV)出力</button></h3>
-      <div class="mock-note" style="margin-bottom:8px;">💡「現担当患者数」は、患者の主担当DHのみを集計した人数です（1患者は1名のDHにのみ帰属。重複なし）。対象は、表示期間（2026年1月以降）に1回以上来院がある患者に限定しています。「中断率」もこの人数を分母にしています。</div>
-      <div class="mock-note" style="margin-bottom:8px;">📌 主担当DHの決め方：その患者のメンテ系来院（SPT・定期検診等）のうち、最も回数の多いDHとしています（同数の場合は直近の来院を優先）。メンテ系来院が1回もない患者は、最終来院時のDHを使います。</div>
-      <div class="mock-note" style="margin-bottom:14px;">⚠️ DHの中断は「③移行中断」「④メンテ中断」（＝メンテ・SPTサイクルからの離脱）のみをカウントしています。「①初診のみ中断」「②治療中断」は現担当患者数には含まれますが、DHの中断としてはカウントしません（DHが主に担当するのはメンテ系患者のため）。Dr別管理は逆に①②のみをカウントしており、定義が異なります。両ページの数値を単純比較しないようご注意ください。</div>
-      <div class="mock-note" style="margin-bottom:14px;">📈 「〇月時点の継続率」は、その月までにそのDHの担当患者として登場した人数（累計。①初診のみ中断・②治療中断の患者は現担当患者数と同様に除外済み）のうち、現時点（本日）で次回予約が入っている人数・割合を表示しています。新患・既存患者を問わず、定期検診として継続的に通えているかを月を追って確認できます。8月時点の分母は「現担当患者数」と一致します。</div>
+      <div class="mock-note" style="margin-bottom:8px;">💡「現担当患者数」は、患者1人につき1名だけ割り当てた主担当DH（メンテ系来院が最も多いDH）の人数です。「〇月時点の継続率」は、その月までの累計担当患者数のうち、現時点で次回予約がある人数・割合です。</div>
+      <div class="mock-note" style="margin-bottom:14px;">⚠️ DHの中断は「メンテ・SPTサイクルからの離脱（③④）」のみをカウントしており、Dr別管理（①②のみ）とは定義が異なります。数値を単純比較しないようご注意ください。</div>
       <table>
         <thead id="dhTableHead"></thead>
         <tbody id="dhTable"></tbody>
@@ -570,6 +565,7 @@ select,input[type=number]{
     </div>
     <div class="panel">
       <h3>🦷 DH別 詳細分析（患者属性.csvが必要）</h3>
+      <div class="mock-note" style="margin-bottom:8px;">✅ 対象患者・継続率（中断率）とも、上のDH別サマリーと完全に同じ基準（表示期間中に来院実績があり①②中断は除外済み、主担当DH）で揃えています。同じDHなら数値は一致します。</div>
       <div id="contDhDetailGrid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;"></div>
     </div>
   </section>
@@ -585,9 +581,8 @@ select,input[type=number]{
     </div>
     <div class="panel">
       <h3 style="display:flex;justify-content:space-between;align-items:center;">🩺 Dr別サマリー（2026年1月以降の新患ベース）<button id="exportDRBtn" style="border:2px solid var(--base);background:#fff;border-radius:12px;padding:6px 12px;font-size:11.5px;font-weight:700;color:var(--accent);cursor:pointer;">📥 Excel(CSV)出力</button></h3>
-      <div class="mock-note" style="margin-bottom:8px;">💡 このページは、表示期間（通常2026年1月以降・直近12ヶ月）に新患として来院した患者だけを対象に集計しています。以前担当していた既存患者や、担当替えの影響は含まれません。「現担当患者数」＝そのDrが最終来院時点で主担当となっている新患の人数です（1患者は1名のDrにのみ帰属）。</div>
-      <div class="mock-note" style="margin-bottom:8px;">🔄 中断率は、治療完了後にメンテへ引き渡し済みの患者（③移行中断・④メンテ中断）を除いて計算しています（Drにとって治療完了は成功のため）。</div>
-      <div class="mock-note" style="margin-bottom:14px;">📈 「〇月時点の継続率」は、その月末時点で実際にその患者を診ていたDrごとに、その時点までの新患累計人数のうち現時点（本日）で次回予約が入っている人数・割合を表示しています。担当替えがあった場合、切り替わった月以降は新しい担当Drの実績として算入され、それ以前の月には遡って算入されません（重複カウントもありません）。右側の「現担当患者数・中断率」は今この瞬間の最終担当Drを基準にしているため、月別列の8月時点の分母とは一致しない場合があります。</div>
+      <div class="mock-note" style="margin-bottom:8px;">💡 対象は2026年1月以降に新患として来院した患者のみです。「〇月時点の継続率」は、その月末時点で実際に診ていたDrごとの実績です（担当替えがあれば切り替わった月から新しい担当Drの実績になります）。</div>
+      <div class="mock-note" style="margin-bottom:14px;">⚠️ 中断率は、メンテへ引き渡し済みの患者（③④）を除いて計算しています。DH別管理とは基準が異なるため単純比較はできません。</div>
       <table>
         <thead id="drTableHead"></thead>
         <tbody id="drTable"></tbody>
@@ -599,7 +594,7 @@ select,input[type=number]{
     </div>
     <div class="panel">
       <h3>🩺 Dr別 詳細分析（患者属性.csvが必要・平均来院回数・年代構成・よく行うメニュー）</h3>
-      <div class="mock-note" style="margin-bottom:8px;">⚠️ このパネルのみ、上のDr別サマリーとは異なり全期間・全患者ベースの集計です（新患コホートには絞っていません）。</div>
+      <div class="mock-note" style="margin-bottom:8px;">✅ 対象患者・継続率（中断率）とも、上のDr別サマリーと完全に同じ基準（2026年1月以降の新患ベース、最終担当Dr）で揃えています。同じDrなら数値は一致します。</div>
       <div id="contDrDetailGrid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;"></div>
     </div>
   </section>
@@ -861,8 +856,8 @@ select,input[type=number]{
       <table>
         <thead><tr><th>データ</th><th>内容</th><th>対象期間</th></tr></thead>
         <tbody>
-          <tr><td><b>来院履歴CSV</b></td><td>予約データのうち「来院状態＝来院」の行のみを実績として使用</td><td>2025年7月〜2026年7月（13ヶ月分）</td></tr>
-          <tr><td><b>未来予約CSV</b></td><td>8月以降に予約が入っている患者の一覧（「中断していない」ことの根拠として使用）</td><td>2026年8月1日〜2027年1月14日</td></tr>
+          <tr><td><b>来院履歴CSV（月別）</b></td><td>予約データのうち「来院状態＝来院」の行を実績として、「来院状態＝未来院」の行を今月中の未消化予約として使用</td><td>2025年7月〜（月ごとに追加）</td></tr>
+          <tr><td><b>未来予約CSV</b></td><td>来月以降に予約が入っている患者の一覧。上記「今月中の未消化予約」と合わせて「次回予約あり＝継続」の判定に使用</td><td>翌月以降</td></tr>
         </tbody>
       </table>
     </div>
@@ -872,9 +867,9 @@ select,input[type=number]{
       <table>
         <thead><tr><th>指標</th><th>算出方法</th></tr></thead>
         <tbody>
-          <tr><td>月間予約件数</td><td>7月の来院履歴データの行数（複数処置が1回の来院に含まれていても1件とカウント）</td></tr>
-          <tr><td>来院患者数</td><td>7月の来院履歴に含まれる診察券番号のユニーク数</td></tr>
-          <tr><td>新患数</td><td>診療メニューに「初診」の文字列を含む7月の来院を持つ患者のユニーク数（下記「新患継続率」と同じ判定ロジック）</td></tr>
+          <tr><td>月間予約件数</td><td>最新月の来院履歴データの行数。来院済み・未消化（未来院）を問わず、その月に入っている予約すべてを数える</td></tr>
+          <tr><td>来院患者数</td><td>最新月の来院済み（来院状態＝来院）データに含まれる診察券番号のユニーク数</td></tr>
+          <tr><td>新患数</td><td>「初診日」列（無い患者のみ診療メニューの「初診」文字列で代用）が最新月に入っている患者のユニーク数。下記「新患継続率」と同じ判定ロジック</td></tr>
           <tr><td>中断率（最新月）</td><td>「中断分析」ページの月別中断率のうち、最新月の値を再利用</td></tr>
           <tr><td>診療区分構成</td><td>「診療区分分析」と同じ分類ロジックを7月データのみに適用</td></tr>
         </tbody>
@@ -887,24 +882,22 @@ select,input[type=number]{
         <thead><tr><th>指標</th><th>算出方法</th></tr></thead>
         <tbody>
           <tr><td>最終来院日</td><td>その患者の来院履歴に含まれる「最終来院日」列（エクスポート時点で最新の来院日を示す値）の最大値</td></tr>
-          <tr><td>中断判定</td><td>最終来院日が確定していて、かつ未来予約CSVにその患者が1件も存在しない場合に「中断」と判定</td></tr>
+          <tr><td>中断判定</td><td>最終来院日が確定していて、かつ「翌月以降の未来予約CSV」「今月中の未消化予約（未来院行）」のどちらにもその患者が1件も無い場合に「中断」と判定</td></tr>
           <tr><td>経過日数</td><td>基準日（<span id="docsBaseDateInline">—</span>、ダッシュボードを開いた/更新した時点の日付）− 最終来院日</td></tr>
           <tr><td>同日に複数件ある場合の最終情報の決め方</td><td>1人の患者が同じ日に複数回予約している場合（例：治療＋メンテを同日に予約）、その日のうち<b>メンテ系のメニューを優先</b>してその患者の「最終来院情報」として採用します（通常、治療が先・メンテが後の順で行われるため）。これは「最終メニュー」「担当DH・Dr・ユニット」「中断区分」など、患者の最終来院情報を使うすべての指標に共通です</td></tr>
           <tr><td>フォロー緊急度</td><td>経過日数に基づく4段階。A：90日以上／B：60〜89日／C：30〜59日／D：30日未満</td></tr>
-          <tr><td>種別（① 初診のみ中断）</td><td>その患者の来院履歴（2025年7月〜2026年7月）が合計1回だけで、その1回のあと未来予約もない場合</td></tr>
+          <tr><td>種別（① 初診のみ中断）</td><td>来院履歴データの取得範囲内で来院が合計1回だけで、その後も次回予約が無い場合。それ以前から通院していた患者を誤ってこの種別にすることはありません</td></tr>
           <tr><td>種別（② 治療中断）</td><td>来院回数が2回以上あり、最終来院メニューがメンテ系（下記キーワード）に該当しない場合</td></tr>
           <tr><td>種別（③ 移行中断）</td><td>最終来院メニューがメンテ系に該当し、かつ来院履歴の中でメンテ系メニューの来院が1回だけ（＝メンテに切り替わった直後で来院が止まった）場合</td></tr>
           <tr><td>種別（④ メンテ中断）</td><td>最終来院メニューがメンテ系に該当し、かつメンテ系の来院が2回以上ある（＝メンテサイクルに定着した後で来院が止まった）場合</td></tr>
+          <tr><td>4分類の合計・%表示</td><td>4種別は必ずいずれか1つに重複なく分類されるため、合計すると中断患者の全数と一致する。カードの%は端数処理の関係で合計が100%からわずかにずれる場合がある</td></tr>
           <tr><td>メンテ系キーワード</td><td>SPT／定期検診／SRP／P-SP／クリーニング・フッ素／EMS／フッ素／シーラント 等</td></tr>
           <tr><td>担当Drの正規化</td><td>「絶対○○」→「○○」に統合、「だれでも」→「未定」、空欄→「未指定」</td></tr>
-          <tr><td>月別中断率推移</td><td>各月に来院した患者のうち、その来院が現時点の最終来院日と一致し、かつ未来予約がない患者の割合</td></tr>
+          <tr><td>月別中断率推移</td><td>各月に来院した患者のうち、その来院が現時点の最終来院日と一致し、かつ次回予約が無い患者の割合。表示対象は最終来院月が表示期間（2026年1月以降）に入っている患者のみ。直近1〜2ヶ月は「まだ次の予約のタイミングが来ていないだけ」の患者も含まれるため、中断率が実態より高く出やすい点に注意</td></tr>
           <tr><td>中断患者リストの性別・年齢</td><td>「患者属性.csv」の診察券番号で突合。ファイルが無い場合、または該当患者がファイル内に無い場合は「—」表示</td></tr>
           <tr><td>最終診療メニュー別 次回予約率</td><td>患者の最終来院時の診療メニュー文字列ごとに、次回予約の有無で継続率を集計。件数5件未満のメニューは表示から除外（患者属性.csvが無くても表示可能）</td></tr>
         </tbody>
       </table>
-      <div class="mock-note" style="margin-top:14px;margin-bottom:8px;">⚠️ 直近月（6月・7月）は「まだ次の予約のタイミングが来ていないだけ」の患者も中断に含まれるため、中断率が実態より高く出やすい傾向があります。</div>
-      <div class="mock-note" style="margin-bottom:8px;">📌 「①初診のみ中断」は、来院履歴データの取得範囲（2025年7月〜2026年7月）内で来院が1回だけの患者を対象としているため、それ以前から通院していた患者を誤って「初診のみ」と判定することはありません。</div>
-      <div class="mock-note">💡 中断・フォローに関する分析はすべてこのページに集約しています。担当者別・患者属性別の切り口は、それぞれDH別管理／Dr別管理／患者属性分析ページをご覧ください。</div>
     </div>
 
     <div class="panel">
@@ -912,13 +905,12 @@ select,input[type=number]{
       <table>
         <thead><tr><th>指標</th><th>算出方法</th></tr></thead>
         <tbody>
-          <tr><td>新患判定</td><td>専用の新患フラグ列がないため、診療メニューに「初診」を含む<b>最初</b>の来院月を「新患月」として推測</td></tr>
-          <tr><td>継続判定</td><td>新患月より後に来院履歴がある、または未来予約が入っている場合に「継続」</td></tr>
+          <tr><td>新患判定</td><td>「初診日」列を優先して使用（無い患者のみ、診療メニューに「初診」を含み「再初診」を含まない最初の来院月で代用）</td></tr>
+          <tr><td>継続判定</td><td>新患月より後に来院履歴がある、または次回予約（翌月以降の未来予約CSV／今月中の未消化予約）が入っている場合に「継続」</td></tr>
           <tr><td>マトリクスの記号</td><td>新＝新患月／○＝その月に来院あり／×＝その月に来院なし／−＝新患になる前の期間</td></tr>
+          <tr><td>集計範囲</td><td>新患として来院した患者だけに絞った継続率です。既存患者も含めた全体の中断状況は「中断分析」ページをご覧ください</td></tr>
         </tbody>
       </table>
-      <div class="mock-note" style="margin-top:14px;margin-bottom:8px;">⚠️ 「初診」という文字列を含まないメニュー名で新患を受け付けている場合、その患者は集計から漏れます。実際の新患数と乖離がないか確認をお願いします。「再初診」は新患から除外しています。</div>
-      <div class="mock-note">💡 新患に絞った継続率はこのページ、既存患者も含めた全体の中断状況は「中断分析」ページをご覧ください。</div>
     </div>
 
     <div class="panel">
@@ -926,14 +918,12 @@ select,input[type=number]{
       <table>
         <thead><tr><th>指標</th><th>算出方法</th></tr></thead>
         <tbody>
-          <tr><td>SPT管理患者数</td><td>最終来院メニューに「SPT」の文字列を含み、かつ最終来院月が表示期間（2026年1月以降）に入っている患者数</td></tr>
-          <tr><td>次回予約ステータス</td><td>未来予約なし→「中断」／未来予約のメニューがメンテ系キーワードを含む→「継続」／それ以外の処置内容→「治療予約」</td></tr>
-          <tr><td>SPT管理率</td><td>SPT管理患者数 ÷ 表示期間（2026年1月以降）に最終来院がある患者数</td></tr>
-          <tr><td>DH別内訳の担当DH判定</td><td>その患者のメンテ系来院（SPT・定期検診・SRP等）のうち最も回数の多いDHを担当患者としてカウント（同数の場合は直近の来院を優先）。メンテ系来院が1回も無い患者は、最終来院時のDHにフォールバック。最終的にDHが「未指定」の患者は、DH別内訳から除外。この判定方法はDH別管理ページの「現担当患者数」と共通</td></tr>
+          <tr><td>SPT管理患者数・SPT管理率（カード・DH別内訳）</td><td>最終来院メニューが「SPT」「定期検診」のみ対象で、かつ最終来院月が表示期間（2026年1月以降）に入っている患者数・全患者に占める割合。"今メンテサイクルの中にいる患者"のスナップショットです</td></tr>
+          <tr><td>次回予約ステータス（カード・DH別内訳）</td><td>次回予約なし→「中断」／次回予約のメニューがメンテ系キーワードを含む→「継続」／それ以外の処置内容→「治療予約」</td></tr>
+          <tr><td>月別 SPT定着率の推移（累計コホート）</td><td>カード・DH別内訳とは別の集計です。患者ごとの「初めてSPT/定期検診に来院した月」を起点に、1月にSPTを始めた患者、1〜2月の累計…と月を追って対象人数を積み上げます。各月末から90日経過後の実績（継続・治療予約・中断）で判定し、90日経過していない直近の月は「判定中」として表示します</td></tr>
+          <tr><td>担当DH判定</td><td>その患者のメンテ系来院（SPT・定期検診・SRP等）のうち最も回数の多いDHを担当患者としてカウント（同数の場合は直近の来院を優先）。メンテ系来院が1回も無い患者は最終来院時のDHにフォールバック。DHが未指定の患者は除外。DH別管理ページの「現担当患者数」と共通のロジックです</td></tr>
         </tbody>
       </table>
-      <div class="mock-note" style="margin-top:0;margin-bottom:8px;">💡 このページの対象は「SPT」「定期検診」のみです。</div>
-      <div class="mock-note">📊 DH別の全体的な継続傾向はDH別管理ページをご覧ください。</div>
     </div>
 
     <div class="panel">
@@ -941,11 +931,12 @@ select,input[type=number]{
       <table>
         <thead><tr><th>指標</th><th>算出方法</th></tr></thead>
         <tbody>
-          <tr><td>月別担当件数</td><td>その月の来院履歴で、そのDH（またはDr）が「主担当」として登録されているユニーク患者数</td></tr>
-          <tr><td>現担当患者数（DH）</td><td>患者のメンテ系来院（SPT・定期検診等）のうち最も回数の多いDHを主担当とし、1患者につき1名としてカウント（同数の場合は直近の来院を優先。メンテ系来院が無い患者は最終来院時のDHを使用）。対象は表示期間（2026年1月以降）に1回以上来院がある患者のみ</td></tr>
-          <tr><td>現担当患者数（Dr）</td><td>患者の「最終来院時点」の主担当Drを対象に、1患者につき1名としてカウント（重複なし）</td></tr>
-          <tr><td>中断数・中断率</td><td>現担当患者数を分母に、現時点で未来予約がない患者のうち特定の中断種別のみを分子とする。DH別管理：③移行中断・④メンテ中断のみをカウント（①②は含めない）。Dr別管理：①初診のみ中断・②治療中断のみをカウント（③④は含めない）</td></tr>
-          <tr><td>Dr別・DH別 詳細分析（患者属性.csvが必要）</td><td>患者数・次回予約率・平均来院回数・年代構成・よく行う最終診療メニューTOP3を、それぞれの担当者（最終担当ベース）ごとに集計</td></tr>
+          <tr><td>現担当患者数（DH）</td><td>患者のメンテ系来院（SPT・定期検診等）のうち最も回数の多いDHを主担当とし、1患者につき1名としてカウント（同数の場合は直近の来院を優先。メンテ系来院が無い患者は最終来院時のDHを使用）。対象は表示期間（2026年1月以降）に来院実績があり、①初診のみ中断・②治療中断に該当しない患者のみ</td></tr>
+          <tr><td>現担当患者数（Dr）</td><td>患者の「今この瞬間の最終来院時点」の主担当Drを対象に、1患者につき1名としてカウント（重複なし）。対象は2026年1月以降の新患のみ</td></tr>
+          <tr><td>中断数・中断率</td><td>現担当患者数を分母に、現時点で次回予約がない患者のうち特定の中断種別のみを分子とする。DH別管理：③移行中断・④メンテ中断のみをカウント（①②は含めない、DHはメンテ系患者が主担当のため）。Dr別管理：①初診のみ中断・②治療中断のみをカウント（③④は含めない、メンテへの引き渡しはDrにとって成功のため）。この定義の違いにより、同じ患者でもDH側とDr側で中断の扱いが異なり、単純比較はできません</td></tr>
+          <tr><td>〇月時点の継続率（DH）</td><td>その月までにそのDHの担当患者として登場した人数の累計（①②除外済み、現担当患者数と同じ絞り込み）のうち、現時点で次回予約がある人数・割合</td></tr>
+          <tr><td>〇月時点の継続率（Dr）</td><td>各月末時点で実際にその患者を診ていたDrごとに、その時点までの新患累計人数のうち現時点で次回予約がある人数・割合。担当替えがあった場合、切り替わった月以降は新しい担当Drの実績として算入され、重複や過去への遡及はない。右側の現担当患者数（今この瞬間の最終担当Dr基準）とは分母の考え方が異なるため、直近月以外は一致しないことがある</td></tr>
+          <tr><td>Dr別・DH別 詳細分析（患者属性.csvが必要）</td><td>対象患者・継続率とも、上記の現担当患者数・中断率と完全に同じ基準を使用。平均来院回数・年代構成・よく行う最終診療メニューTOP3を担当者ごとに追加集計したもの</td></tr>
         </tbody>
       </table>
     </div>
@@ -1150,37 +1141,36 @@ const GAS_URL = "https://script.google.com/macros/s/AKfycbwdSeIMaeaTP-nlwOiEnZsH
 async function initApp(){
 
 /* ---------- 患者属性分析・DH/Dr別ランキング等 ---------- */
+// 色分け区分(共通): 0〜29% / 30〜49% / 50〜69% / 70〜89% / 90%以上 の5段階。
+// rateColor: 継続率など「数値が高いほど良い」指標用。0%に近いほど悪い(赤)、90%以上が最も良い(緑)。
 function rateColor(rate){
-  if(rate>=81) return "#1fb383";
-  if(rate>=71) return "#6fcf6f";
-  if(rate>=61) return "#a3c94a";
-  if(rate>=51) return "#ffb703";
-  if(rate>=41) return "#ff8c42";
-  if(rate>=31) return "#ff6f61";
+  if(rate>=90) return "#1fb383";
+  if(rate>=70) return "#6fcf6f";
+  if(rate>=50) return "#ffb703";
+  if(rate>=30) return "#ff8c42";
   return "#c0392b";
 }
 const RATE_COLOR_LEGEND = [
-  ["0〜30%", "#c0392b"], ["31〜40%", "#ff6f61"], ["41〜50%", "#ff8c42"], ["51〜60%", "#ffb703"],
-  ["61〜70%", "#a3c94a"], ["71〜80%", "#6fcf6f"], ["81%以上", "#1fb383"]
+  ["0〜29%", "#c0392b"], ["30〜49%", "#ff8c42"], ["50〜69%", "#ffb703"], ["70〜89%", "#6fcf6f"], ["90%以上", "#1fb383"]
 ];
 function rateColorLegendHtml(){
   return `<div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:12px;font-size:11px;color:#6b7fa3;">
     ${RATE_COLOR_LEGEND.map(([label,color])=>`<span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:3px;background:${color};display:inline-block;"></span>${label}</span>`).join("")}
   </div>`;
 }
-// 中断率用(数値が高いほど悪い)。色の意味を反転させた同じ7段階
+// dropoutColor: 中断率など「数値が高いほど悪い」指標専用。rateColorと区切り(0-29/30-49/50-69/70-89/90+)は揃えつつ、
+// 色の意味だけを反転させている(中断率が低い＝良い→緑、中断率が高い＝悪い→赤)。
+// 継続率の色(rateColor)をそのまま中断率に流用すると、中断率90%(＝ほぼ全員離脱という最悪の状態)が
+// 「90%以上=最良=緑」と誤表示されてしまうため、中断率専用にこの関数を必ず使うこと。
 function dropoutColor(rate){
-  if(rate>=81) return "#c0392b";
-  if(rate>=71) return "#ff6f61";
-  if(rate>=61) return "#ff8c42";
-  if(rate>=51) return "#ffb703";
-  if(rate>=41) return "#a3c94a";
-  if(rate>=31) return "#6fcf6f";
+  if(rate>=90) return "#c0392b";
+  if(rate>=70) return "#ff8c42";
+  if(rate>=50) return "#ffb703";
+  if(rate>=30) return "#6fcf6f";
   return "#1fb383";
 }
 const DROPOUT_COLOR_LEGEND = [
-  ["0〜30%", "#1fb383"], ["31〜40%", "#6fcf6f"], ["41〜50%", "#a3c94a"], ["51〜60%", "#ffb703"],
-  ["61〜70%", "#ff8c42"], ["71〜80%", "#ff6f61"], ["81%以上", "#c0392b"]
+  ["0〜29%", "#1fb383"], ["30〜49%", "#6fcf6f"], ["50〜69%", "#ffb703"], ["70〜89%", "#ff8c42"], ["90%以上", "#c0392b"]
 ];
 function dropoutColorLegendHtml(){
   return `<div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:12px;font-size:11px;color:#6b7fa3;">
@@ -1991,7 +1981,7 @@ function renderStaffPage(data, tableId, barsId, nameLabel, headId){
   `).join("");
 
   const bars = document.getElementById(barsId);
-  const barsSorted = data.staff.slice().sort((a,b)=>b.dropoutRate-a.dropoutRate);
+  const barsSorted = data.staff.slice().sort((a,b)=>a.dropoutRate-b.dropoutRate); // 中断率が低い(良い)順に上位表示
   bars.innerHTML = dropoutColorLegendHtml() + barsSorted.map(s=>{
     const w = Math.round(s.dropoutRate/maxRate*100);
     const c = dropoutColor(s.dropoutRate);
@@ -2007,10 +1997,10 @@ function renderStaffPage(data, tableId, barsId, nameLabel, headId){
 /* ---------- SPT定着分析 ---------- */
 function renderSPT(){
   document.getElementById("sptCards").innerHTML = `
-    <div class="card"><div class="label">🪥 SPT管理患者数</div><div class="value">${SPT.sptTotal.toLocaleString()}</div><div class="sub">最終来院がSPT（全体の${SPT.manageRate}%）</div></div>
+    <div class="card"><div class="label">🪥 SPT管理患者数</div><div class="value">${SPT.sptTotal.toLocaleString()}</div><div class="sub">最終来院がSPT（2026年1月以降の来院患者${SPT.totalPatients.toLocaleString()}名中${SPT.manageRate}%）</div></div>
     <div class="card"><div class="label">✅ SPT継続率</div><div class="value">${SPT.continueRate}%</div><div class="sub">次回もSPT予約あり</div></div>
     <div class="card"><div class="label">💔 SPT中断</div><div class="value">${SPT.dropoutCount}</div><div class="sub">次回予約なし</div></div>
-    <div class="card"><div class="label">📊 SPT管理率</div><div class="value">${SPT.manageRate}%</div><div class="sub">全患者中</div></div>
+    <div class="card"><div class="label">📊 SPT管理率</div><div class="value">${SPT.manageRate}%</div><div class="sub">2026年1月以降の来院患者${SPT.totalPatients.toLocaleString()}名中の割合</div></div>
   `;
 
   // 月別SPT定着率推移(累計コホート方式): その月までに初めてSPTに入った患者の累計のうち、
@@ -2373,9 +2363,9 @@ function renderUnit(){
   let mTbody = units.map(u=>`<tr><td style="text-align:left;">${u.name}</td>${u.monthly.map(v=>`<td>${v}</td>`).join("")}<td style="font-weight:700;">${u.cumulative}</td></tr>`).join("");
   document.getElementById("unitMonthlyTable").innerHTML = mThead + mTbody;
 
-  // ⑤ユニット別中断率(患者ベース。中断率降順)
+  // ⑤ユニット別中断率(患者ベース。中断率が低い=良い順)
   const withPatients = units.filter(u => (u.patientTotal||0) > 0);
-  const dropoutSorted = withPatients.slice().sort((a,b)=>b.dropoutRate-a.dropoutRate);
+  const dropoutSorted = withPatients.slice().sort((a,b)=>a.dropoutRate-b.dropoutRate);
   document.getElementById("unitDropoutBars").innerHTML = dropoutColorLegendHtml() + dropoutSorted.map(u=>{
     const c = dropoutColor(u.dropoutRate);
     return `<div style="display:flex;align-items:center;gap:10px;margin-bottom:9px;font-size:12.5px;">
